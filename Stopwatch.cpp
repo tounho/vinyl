@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Stopwatch.h"
+#include "stopwatch.h"
 
 /** For meassureing the time between cycles
  *  and calculating an average. Not imporant.
