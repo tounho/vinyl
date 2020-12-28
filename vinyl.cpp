@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <opencv2\opencv.hpp>
 #include <cxxopts.hpp>
-#include "Stopwatch.h"
+#include "stopwatch.h"
 
 /**
  * Takes a single frame and returns the dominant color.
