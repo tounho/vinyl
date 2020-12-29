@@ -116,6 +116,7 @@ std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::v
 		if (frame.empty()) {
 			if (cap.get(cv::CAP_PROP_POS_FRAMES) < total_frames) {
 				// This is weird. Internet sais empty frame means EOF, but I had empty strings in the middle of videos before, especially mkv with webm
+				std::cout << " SKIP. Frame now at " << cap.get(cv::CAP_PROP_POS_FRAMES) << std::endl << std::flush;
 				continue;
 			} else {
 				// EOF
@@ -125,7 +126,7 @@ std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::v
 
 		// append the dominant color to the list
 		colors.insert(colors.end(), get_dominant_color(frame, crop_area, scale_size, preview));
-		
+
 		// print current stat and ETA to std::cout
 		stopwatch.Lap();
 		float wma = stopwatch.weightedMovingAverage();
@@ -179,6 +180,7 @@ int main(int argc, char** argv)
 {
 #ifdef _DEBUG
 	std::cout << "Debug build" << std::endl;
+	std::cout << cv::getBuildInformation() << std::endl;
 #endif
 	// argument parsing
 	bool preview;
