@@ -154,7 +154,7 @@ std::string spiral(std::list<cv::Vec3b> colors, float radius_base, float arc) {
 	std::stringstream arc_segments;
 
 	for (cv::Vec3b c : colors) {
-		float dtheta = DELTATHETA(theta, radius_base, arc);
+		float dtheta = DELTATHETA(theta, radius_base, arc * 1.1f);
 		float rtheta = RTHEHTA(theta, radius_base);
 
 		// svg path for a single arc segment
@@ -164,7 +164,7 @@ std::string spiral(std::list<cv::Vec3b> colors, float radius_base, float arc) {
 			<< std::hex << std::setfill('0') << std::setw(2) << (int)c[0] << std::setfill('0') << std::setw(2) << (int)c[1] << std::setfill('0') << std::setw(2) << (int)c[2]
 			<< "\"/>" << std::endl;
 
-		theta += dtheta;
+		theta += DELTATHETA(theta, radius_base, arc);
 	}
 
 	float r_max = std::ceil(RTHEHTA(theta, radius_base));
