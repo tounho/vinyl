@@ -167,7 +167,7 @@ std::string spiral(std::list<cv::Vec3b> colors, float radius_base, float arc) {
 		theta += DELTATHETA(theta, radius_base, arc);
 	}
 
-	float r_max = std::ceil(RTHEHTA(theta, radius_base));
+	float r_max = std::ceil(RTHEHTA(theta + 2 * PI, radius_base));
 	spiral << "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"" << -r_max << " " << -r_max << " " << 2 * r_max << " " << 2 * r_max << "\">" << std::endl;
 	spiral << arc_segments.str();
 	spiral << "</svg>" << std::endl;
