@@ -131,7 +131,7 @@ std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::v
 		stopwatch.Lap();
 		float wma = stopwatch.weightedMovingAverage();
 		int eta = (total_frames - cap.get(cv::CAP_PROP_POS_FRAMES)) * wma;
-		std::cout << "Frame " << (int)cap.get(cv::CAP_PROP_POS_FRAMES) << "/" << total_frames << " @ " << std::setprecision(4) << (1/wma) << " FPS (" << (100.0f * cap.get(cv::CAP_PROP_POS_FRAMES) / total_frames) << "%) ETA " << (int)(eta/60) << " minutes " << (int)(eta%60) << " seconds" << std::endl;
+		std::cout << "\r" << "Frame " << (int)cap.get(cv::CAP_PROP_POS_FRAMES) << "/" << total_frames << " @ " << std::setprecision(4) << (1/wma) << " FPS (" << (100.0f * cap.get(cv::CAP_PROP_POS_FRAMES) / total_frames) << "%) ETA " << (int)(eta/60) << " minutes " << (int)(eta%60) << " seconds" << std::flush;
 	}
 }
 
