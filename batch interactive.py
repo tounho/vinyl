@@ -69,7 +69,7 @@ if __name__ == '__main__':
     #if not path.exists(wdir): mkdir(wdir)
 
     video_paths = []
-    for f in ['mkv']: video_paths.extend(glob(path.join(dir, '*.' + f)))
+    for f in ['mkv', 'mp4']: video_paths.extend(glob(path.join(dir, '*.' + f)))
     print('{n} video files found in {path}'.format(n=len(video_paths), path=dir))
     
     title = input('Choose title: ')
