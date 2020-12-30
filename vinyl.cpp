@@ -119,7 +119,7 @@ std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::v
 				// This is weird. Internet sais empty frame means EOF, but I had empty strings in the middle of videos before, especially mkv
 				if ((uint)cap.get(cv::CAP_PROP_POS_FRAMES) == lastFrame) {
 					std::cout << std::endl << "Stuck at frame " << cap.get(cv::CAP_PROP_POS_FRAMES) << ". Terminating early." << std::endl << std::flush;
-					std::cin.get();
+					if (cap.get(cv::CAP_PROP_POS_FRAMES) / total_frames < .99) std::cin.get();
 					return colors;
 				} else {
 					std::cout << std::endl << "Skipped a frame at" << (uint)cap.get(cv::CAP_PROP_POS_FRAMES) << std::endl << std::flush;
