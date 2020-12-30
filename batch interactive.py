@@ -27,28 +27,36 @@ def downsize(job):
     print('#{id} {name} now smol'.format(id=job['id'], name=path.basename(job['original_path'])))
 
 def generate_svg(job):
-    cmd = '"{vinyl}" "{file}" --scale=8 -r 10 -p'.format(
-        vinyl=vinyl_path,
-        file=job['original_path']
-        )
+    if path.isfile(job['svg_path']):
+        print('#{id} {name} skipped'.format(id=job['id'], name=path.basename(job['original_path'])))
+        sys.stdout.flush()
+    else:
+        cmd = '"{vinyl}" "{file}" --scale=4 -r 10 -p'.format(
+            vinyl=vinyl_path,
+            file=job['original_path']
+            )
     
-    p = subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE)
-    p.communicate()
-    print('#{id} {name} finished'.format(id=job['id'], name=path.basename(job['original_path'])))
-    sys.stdout.flush()
+        p = subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        p.communicate()
+        print('#{id} {name} finished'.format(id=job['id'], name=path.basename(job['original_path'])))
+        sys.stdout.flush()
     
 def render_png(job):
-    cmd = '"{inkscape}" --file="{svg}" --without-gui --export-png="{png}" --export-height={height}'.format(
-        inkscape=inkscape_path,
-        svg=job['svg_path'],
-        png=job['png_path'],
-        height=dimensions
-        )
+    if path.isfile(job['png_path']):
+        print('#{id} {name} skipped'.format(id=job['id'], name=path.basename(job['svg_path'])))
+        sys.stdout.flush()
+    else:
+        cmd = '"{inkscape}" --file="{svg}" --without-gui --export-png="{png}" --export-height={height}'.format(
+            inkscape=inkscape_path,
+            svg=job['svg_path'],
+            png=job['png_path'],
+            height=dimensions
+            )
     
-    p = subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE)
-    p.communicate()
-    print('#{id} {name} finished'.format(id=job['id'], name=path.basename(job['svg_path'])))
-    sys.stdout.flush()
+        p = subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        p.communicate()
+        print('#{id} {name} finished'.format(id=job['id'], name=path.basename(job['svg_path'])))
+        sys.stdout.flush()
 
 if __name__ == '__main__':
     if len(sys.argv) < 2 or not path.isdir(sys.argv[1]):
@@ -78,7 +86,7 @@ if __name__ == '__main__':
     subtitle_height = 0
     for i, p in enumerate(video_paths):
         prefix_i = prefix.replace('{n}', str(i+1))
-        title_i = (prefix_i + textwrap.fill(input('Title for {name}: {prefix}'.format(prefix=prefix_i, name=path.basename(p))), 32)).replace(r'\n', '\n')
+        title_i = (prefix_i + textwrap.fill(input('Title for {name}: {prefix}'.format(prefix=prefix_i, name=path.basename(p))), 32)).replace('>', '\n')
         subtitle_height = max(subtitle_height, (title_i.count('\n') + 2) * subtitle_pt)
         jobs.append(
             {
