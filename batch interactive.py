@@ -79,7 +79,7 @@ if __name__ == '__main__':
         print('too many.')
         exit(0)
     if sum(rowlimit) < len(video_paths):
-        print('append list with {item}'.format(len(video_paths) - sum(rowlimit)))
+        print('append list with {item}'.format(item=(len(video_paths) - sum(rowlimit))))
         rowlimit.append(len(video_paths) - sum(rowlimit))
 
     jobs = []
