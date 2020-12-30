@@ -118,11 +118,11 @@ std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::v
 			if (cap.get(cv::CAP_PROP_POS_FRAMES) < total_frames) {
 				// This is weird. Internet sais empty frame means EOF, but I had empty strings in the middle of videos before, especially mkv
 				if ((uint)cap.get(cv::CAP_PROP_POS_FRAMES) == lastFrame) {
-					std::cout << "Stuck at frame " << cap.get(cv::CAP_PROP_POS_FRAMES) << ". Terminating early." << std::endl << std::flush;
+					std::cout << std::endl << "Stuck at frame " << cap.get(cv::CAP_PROP_POS_FRAMES) << ". Terminating early." << std::endl << std::flush;
 					std::cin.get();
 					return colors;
 				} else {
-					std::cout << "Skipped a frame at" << (uint)cap.get(cv::CAP_PROP_POS_FRAMES) << std::endl << std::flush;
+					std::cout << std::endl << "Skipped a frame at" << (uint)cap.get(cv::CAP_PROP_POS_FRAMES) << std::endl << std::flush;
 					continue;
 				}
 			} else {
@@ -139,7 +139,7 @@ std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::v
 		stopwatch.Lap();
 		float wma = stopwatch.weightedMovingAverage();
 		int eta = (total_frames - cap.get(cv::CAP_PROP_POS_FRAMES)) * wma;
-		std::cout << "\r" << "Frame " << (int)cap.get(cv::CAP_PROP_POS_FRAMES) << "/" << total_frames << " @ " << std::setprecision(4) << (1/wma) << " FPS (" << (100.0f * cap.get(cv::CAP_PROP_POS_FRAMES) / total_frames) << "%) ETA " << (int)(eta/60) << " minutes " << (int)(eta%60) << " seconds" << std::flush;
+		std::cout << "\r" << "Frame " << (int)cap.get(cv::CAP_PROP_POS_FRAMES) << "/" << total_frames << " @ " << std::setprecision(4) << (1/wma) << " FPS (" << (100.0f * cap.get(cv::CAP_PROP_POS_FRAMES) / total_frames) << "%) ETA " << (int)(eta/60) << " minutes " << (int)(eta%60) << " seconds\t\t" << std::flush;
 	}
 }
 
