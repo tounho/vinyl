@@ -61,7 +61,7 @@ cv::Vec3b get_dominant_color(cv::Mat frame, cv::Rect2i crop = cv::Rect2i(), cv::
  * @param preview Whether a preview should be displayed
  * @return A list with colors as Vec3b in RGB
  */
-std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::vector<uint> scale, bool preview) {
+std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::vector<int> scale, bool preview) {
 	// open video file
 	cv::VideoCapture cap(path);
 	if (!cap.isOpened()) {
@@ -87,15 +87,36 @@ std::list<cv::Vec3b> get_colors(std::string path, std::vector<uint> crop, std::v
 	
 	// calculate downscaling
 	cv::Size2i scale_size = cv::Size2i();
+	// scaling by a factor
 	if (scale.size() == 1 && scale[0] > 0) {
-		if (crop_area == cv::Rect2i()) {
-			scale_size = cv::Size2i(frame_width / scale[0], frame_height / scale[0]);
-		} else {
-			scale_size = cv::Size2i(crop_area.width / scale[0], crop_area.height / scale[0]);
-		}
+		// frame wasn't croped prior
+		if (crop_area == cv::Rect2i()) scale_size = cv::Size2i(frame_width / scale[0], frame_height / scale[0]);
+		// frame was croped prior
+		else scale_size = cv::Size2i(crop_area.width / scale[0], crop_area.height / scale[0]);
 	}
-	else if (scale.size() == 2 && scale[0] > 0 && scale[1] > 0) {
-		scale_size = cv::Size2i(scale[0], scale[1]);
+	// scaling by resolution
+	else if (scale.size() == 2) {
+		if (scale[0] == -1) {
+			if (crop_area == cv::Rect2i()) scale_size = cv::Size2i(
+				(int)((float)frame_width * scale[1] / frame_height),
+				scale[1]
+			);
+			else scale_size = cv::Size2i(
+				(int)((float)crop_area.width * scale[1] / crop_area.height),
+				scale[1]
+			);
+		}
+		else if (scale[1] == -1) {
+			if (crop_area == cv::Rect2i()) scale_size = cv::Size2i(
+				scale[0],
+				(int)((float)frame_height * scale[0] / frame_width)
+			);
+			else scale_size = cv::Size2i(
+				scale[0],
+				(int)((float)crop_area.height * scale[0] / crop_area.width)
+			);
+		}
+		else scale_size = cv::Size2i(scale[0], scale[1]);
 	}
 
 	// stopwatch to calculate FPS and ETA
@@ -197,7 +218,7 @@ int main(int argc, char** argv)
 	float arc;
 
 	std::vector<uint> crop;
-	std::vector<uint> scale;
+	std::vector<int> scale;
 
 	std::vector<std::string> unmatched;
 
@@ -207,7 +228,7 @@ int main(int argc, char** argv)
 		("r,radius", "Inner radius", cxxopts::value<float>()->default_value("10.0f"))
 		("arc", "Arc segment length", cxxopts::value<float>()->default_value("1.0f"))
 		("crop", "crop x,y,width,height or ratioX,ratioY (applied before scale)", cxxopts::value<std::vector<uint>>())
-		("scale", "downscaling width,height or factor", cxxopts::value<std::vector<uint>>()->default_value("4"))
+		("scale", "downscaling width,height or factor", cxxopts::value<std::vector<int>>()->default_value("4"))
 		("h,help", "Print help")
 		;
 
@@ -254,8 +275,20 @@ int main(int argc, char** argv)
 	}
 
 	if (opt_result["scale"].count()) {
-		scale = opt_result["scale"].as<std::vector<uint>>();
-		if ((scale.size() != 1 && scale.size() != 2)) {
+		scale = opt_result["scale"].as<std::vector<int>>();
+		if (
+			// must have 1 or 2 elements
+			(scale.size() != 1 && scale.size() != 2)
+			// if 1 element, must be greater than 0
+			|| (scale.size() == 1 && scale[0] < 1)
+			// if 2 elements, maximum of one can be -1, otherwise greater than 0
+			|| (scale.size() == 2 && (
+				scale[0] == 0 || scale[0] < -1
+				|| scale[1] == 0 || scale[1] < -1
+				|| (scale[0] == -1 && scale[1] == -1)
+				))
+			) {
+
 			std::cout << "scale invalid" << std::endl;
 			exit(0);
 		}
@@ -271,7 +304,7 @@ int main(int argc, char** argv)
 	std::cout << "]" << std::endl;
 
 	std::cout << "scale=[";
-	for (std::vector<uint>::const_iterator i = scale.cbegin(); i != scale.cend(); ++i) std::cout << *i << (std::next(i) == scale.cend() ? "" : ", ");
+	for (std::vector<int>::const_iterator i = scale.cbegin(); i != scale.cend(); ++i) std::cout << *i << (std::next(i) == scale.cend() ? "" : ", ");
 	std::cout << "]" << std::endl;
 #endif // _DEBUG
 
